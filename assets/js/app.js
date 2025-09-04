@@ -1,4 +1,79 @@
 (() => {
+  // 背景: 金粉（粒子）アニメーション（軽量）
+  const dustCanvas = document.getElementById('goldDust');
+  if (dustCanvas) {
+    const ctx = dustCanvas.getContext('2d', { alpha: true });
+    let width, height, dpr;
+    const particles = [];
+    const MAX_PARTICLES = 150; // 赤スパーク追加でやや増量
+
+    const rand = (min, max) => Math.random() * (max - min) + min;
+
+    const resize = () => {
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      width = dustCanvas.clientWidth = window.innerWidth;
+      height = dustCanvas.clientHeight = window.innerHeight;
+      dustCanvas.width = Math.floor(width * dpr);
+      dustCanvas.height = Math.floor(height * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    };
+    resize();
+    window.addEventListener('resize', resize);
+
+    const spawn = () => {
+      while (particles.length < MAX_PARTICLES) {
+        const isRed = Math.random() < 0.28; // 28%は赤いスパーク
+        particles.push({
+          x: rand(0, width),
+          y: rand(0, height),
+          r: isRed ? rand(0.8, 2.2) : rand(0.6, 1.8),
+          vx: rand(-0.1, 0.1),
+          vy: isRed ? rand(0.02, 0.22) : rand(-0.05, 0.15),
+          life: rand(3, 8),
+          t: 0,
+          hue: isRed ? rand(350, 5) : rand(42, 48), // 赤 or 金
+        });
+      }
+    };
+    spawn();
+
+    let last = performance.now();
+    const loop = (now) => {
+      const dt = Math.min((now - last) / 1000, 0.033); // 上限で安定
+      last = now;
+
+      ctx.clearRect(0, 0, width, height);
+      for (let i = particles.length - 1; i >= 0; i--) {
+        const p = particles[i];
+        p.t += dt;
+        p.x += p.vx + Math.sin((p.t + i) * 0.8) * 0.02;
+        p.y += p.vy;
+        if (p.y > height + 5) { p.y = -5; p.x = rand(0, width); }
+        const alpha = Math.sin((p.t / p.life) * Math.PI) * 0.9; // フェードイン/アウト
+        ctx.beginPath();
+        ctx.fillStyle = `hsla(${p.hue}, 70%, 62%, ${alpha})`;
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fill();
+
+        // 微小なグロー
+        const glow = p.r * 6;
+        const grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, glow);
+        grad.addColorStop(0, `hsla(${p.hue}, 85%, 70%, ${alpha * 0.35})`);
+        grad.addColorStop(1, 'rgba(0,0,0,0)');
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, glow, 0, Math.PI * 2);
+        ctx.fill();
+
+        if (p.t > p.life) {
+          particles.splice(i, 1);
+        }
+      }
+      spawn();
+      requestAnimationFrame(loop);
+    };
+    requestAnimationFrame(loop);
+  }
   // 国内向け課金パック（2025/09時点の一般的な構成）
   // amountYen: 税込円, vp: 付与VP, bonus: ボーナスVP (表示用)
   const packs = [

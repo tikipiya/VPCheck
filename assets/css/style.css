@@ -1,11 +1,18 @@
 :root {
-  --bg: #0b0f12;
-  --card: #11161b;
-  --text: #e6edf3;
-  --muted: #9fb0bf;
-  --accent: #ff4655;
-  --accent-2: #10b981;
-  --border: #1f2a34;
+  /* Gold × Black × White theme */
+  --bg: #0a0a0a;
+  --bg-grad-1: #0a0a0a;
+  --bg-grad-2: #0d0b0b;
+  --card: #101010;
+  --card-elevated: #141414;
+  --text: #eeeeee; /* 少量の白 */
+  --muted: #b3a574; /* くすみゴールド */
+  --accent: #d4af37; /* メインの金色 */
+  --accent-2: #ffd369; /* 明るい金色（ハイライト） */
+  --accent-red: #ff4655; /* アクセントの赤（VALORANT系） */
+  --border: rgba(212, 175, 55, 0.18);
+  --border-strong: rgba(212, 175, 55, 0.35);
+  --shadow-gold: 0 0 0 1px rgba(212, 175, 55, 0.25), 0 8px 24px rgba(212, 175, 55, 0.08);
 }
 
 * { box-sizing: border-box; }
@@ -13,10 +20,34 @@ html, body { height: 100%; }
 body {
   margin: 0;
   font-family: "Inter", system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
-  background: var(--bg);
+  background: linear-gradient(180deg, var(--bg-grad-1), var(--bg-grad-2));
   color: var(--text);
   line-height: 1.6;
 }
+
+/* 背景エフェクトの共通レイヤー設定 */
+.fx {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* スポットライト: 上部に当たる微光と円形のグロー */
+.fx-spotlight {
+  background:
+    radial-gradient(1200px 420px at 50% -120px, rgba(255, 214, 120, 0.22), rgba(0,0,0,0) 70%),
+    radial-gradient(900px 300px at 50% 0, rgba(255, 70, 85, 0.18), rgba(0,0,0,0) 60%),
+    radial-gradient(75% 120% at 50% 20%, rgba(212, 175, 55, 0.06), rgba(0,0,0,0) 60%),
+    radial-gradient(800px 140px at 50% 100%, rgba(255, 70, 85, 0.12), rgba(0,0,0,0) 70%);
+  mask-image: radial-gradient(100% 80% at 50% 20%, #000 60%, transparent 100%);
+}
+
+/* 粒子キャンバスは下地に敷く */
+.fx-dust { display:block; position: fixed; inset: 0; z-index: 0; }
+
+/* コンテンツはエフェクトの上に */
+header, main, footer { position: relative; z-index: 1; }
 
 .container {
   max-width: 960px;
@@ -32,10 +63,11 @@ h1 {
 .subtitle { color: var(--muted); margin: 0 0 8px; }
 
 .card {
-  background: var(--card);
+  background: linear-gradient(180deg, var(--card), var(--card-elevated));
   border: 1px solid var(--border);
   border-radius: 12px;
   padding: 16px;
+  box-shadow: var(--shadow-gold);
 }
 
 .label { display:block; font-weight:600; margin-bottom:6px; }
@@ -44,25 +76,42 @@ h1 {
 #vpInput {
   flex: 1;
   padding: 10px 12px;
-  background: #0e1317;
+  background: #0c0c0c;
   border: 1px solid var(--border);
   border-radius: 8px;
   color: var(--text);
+  outline: none;
+  transition: border-color .2s ease, box-shadow .2s ease, background .2s ease;
+}
+#vpInput::placeholder { color: rgba(255,255,255,.35); }
+#vpInput:focus {
+  border-color: var(--border-strong);
+  box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.15);
+  background: #0f0f0f;
 }
 
 button {
-  background: var(--accent);
-  color: #fff;
-  border: none;
+  background: linear-gradient(180deg, #e2c75a, var(--accent));
+  color: #111;
+  border: 1px solid var(--border-strong);
   border-radius: 8px;
   padding: 10px 14px;
   font-weight: 700;
   cursor: pointer;
+  text-shadow: 0 1px 0 rgba(255,255,255,.25);
+  box-shadow: 0 6px 16px rgba(212, 175, 55, 0.15), 0 0 0 0 rgba(255, 70, 85, 0);
+  transition: transform .06s ease, box-shadow .2s ease, filter .2s ease;
 }
-button:hover { opacity: .9; }
+button:hover { 
+  filter: brightness(1.02);
+  box-shadow: 0 10px 22px rgba(212, 175, 55, 0.22), 0 0 0 4px rgba(255, 70, 85, 0.18);
+  background: linear-gradient(180deg, #ff7a86, var(--accent-red));
+  color: #111;
+}
+button:active { transform: translateY(1px); }
 
 .hint { color: var(--muted); font-size: 12px; margin-top: 8px; }
-.error { color: #ff9aa2; margin-top: 6px; }
+.error { color: var(--accent-red); margin-top: 6px; }
 
 .grid {
   margin-top: 16px;
@@ -79,13 +128,29 @@ button:hover { opacity: .9; }
 .packs th, .packs td { border-bottom: 1px solid var(--border); padding: 10px 8px; text-align: left; }
 .packs th { color: var(--muted); font-weight: 600; }
 .packs td b { color: var(--accent-2); }
-.packs .bonus { color: #ffb4bd; font-size: 12px; }
+.packs .bonus { color: var(--accent-red); font-size: 12px; }
+.packs tbody tr:hover { background: rgba(212, 175, 55, 0.06); }
 
 .result p { margin: 8px 0; }
-.result .total { font-size: 22px; font-weight: 700; }
+.result .total { font-size: 22px; font-weight: 700; color: var(--accent-2); }
 .result .combo { margin-top: 8px; }
-.result code { background: #0e1317; padding: 2px 6px; border-radius: 6px; }
+.result code { background: #0b0b0b; padding: 2px 6px; border-radius: 6px; border: 1px solid var(--border); color: #f1f1f1; }
 
 .footer { color: var(--muted); text-align:center; }
+
+/* タイトルにさりげない金の下線 */
+h1, h2 {
+  position: relative;
+}
+h1::after, h2::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -6px;
+  width: 64px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent) 0%, var(--accent) 30%, var(--accent-red) 30%, var(--accent-red) 100%);
+  border-radius: 2px;
+}
 
 
