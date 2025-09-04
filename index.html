@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>VALORANT VP計算機</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="container">
+    <h1>VALORANT VP計算機</h1>
+    <p class="subtitle">欲しいスキンの必要VPを入れると、最小の課金額と最適なパック組合せを計算します。</p>
+  </header>
+
+  <main class="container">
+    <section class="card">
+      <label for="vpInput" class="label">必要VP</label>
+      <div class="input-row">
+        <input id="vpInput" type="number" inputmode="numeric" min="1" step="1" placeholder="例: 2175" aria-label="必要なヴァロラントポイント">
+        <button id="calcBtn" type="button">計算する</button>
+      </div>
+      <p class="hint">参考: 1VP ≒ 1.22円（日本）</p>
+      <div id="error" role="alert" class="error" hidden></div>
+    </section>
+
+    <section class="grid">
+      <div class="card">
+        <h2>結果</h2>
+        <div id="result" class="result">
+          <p>必要VPを入力して「計算する」を押してください。</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>国内課金パック</h2>
+        <table class="packs">
+          <thead>
+            <tr><th>金額</th><th>VP</th></tr>
+          </thead>
+          <tbody id="packsBody">
+            <!-- JSで埋め込み -->
+          </tbody>
+        </table>
+        <p class="note">カッコ内はボーナスVP。販売内容の変更がある場合は実際のストアを優先。</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="container footer">
+    <small>&copy; 2025 tikisan. 本サイトは非公式であり、Riot Games および VALORANT とは一切関係がありません。"VALORANT" は Riot Games, Inc. の商標です。</small>
+  </footer>
+
+  <script src="assets/js/app.js"></script>
+</body>
+</html>
+
+
